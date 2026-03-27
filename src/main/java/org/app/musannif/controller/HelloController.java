@@ -1,4 +1,4 @@
-package org.example.musannif;
+package org.app.musannif.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;

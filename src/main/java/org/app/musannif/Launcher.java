@@ -1,4 +1,4 @@
-package org.example.musannif;
+package org.app.musannif;
 
 import javafx.application.Application;
 
