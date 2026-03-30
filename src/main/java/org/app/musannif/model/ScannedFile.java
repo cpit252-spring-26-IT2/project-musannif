@@ -1,4 +1,4 @@
-package org.app.musannif;
+package org.app.musannif.model;
 
 import java.nio.file.Path;
 import java.time.Instant;

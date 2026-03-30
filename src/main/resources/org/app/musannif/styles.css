@@ -1,0 +1,53 @@
+
+/* Top bar/*
+
+/* Normal State */
+.credits-button {
+    -fx-background-color: transparent;
+    -fx-border-color: rgba(167, 243, 208, 0.6);
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 4px;
+    -fx-text-fill: #A7F3D0;
+    -fx-font-family: 'Consolas', monospace;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+/* Hover State */
+.credits-button:hover {
+    -fx-background-color: rgba(167, 243, 208, 0.1);
+    -fx-border-color: #A7F3D0;
+}
+
+/* Pressed State */
+.credits-button:pressed {
+    -fx-background-color: rgba(167, 243, 208, 0.2);
+}
+
+
+/* sidebar navigation buttons */
+
+/* Standard State */
+.nav-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-alignment: BASELINE_LEFT;
+    -fx-padding: 15 15 15 20;
+    -fx-cursor: hand;
+    -fx-border-width: 0 0 0 4;
+}
+
+/* Hover State */
+.nav-button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+    -fx-text-fill: #ffffff;
+}
+
+/* Active/Selected State */
+.nav-button-active {
+    -fx-background-color: rgba(29, 158, 117, 0.2);
+    -fx-text-fill: #ffffff;
+    -fx-border-width: 0 0 0 4;
+}
