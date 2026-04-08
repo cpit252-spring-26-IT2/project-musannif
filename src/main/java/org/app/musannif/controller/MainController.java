@@ -1,13 +1,23 @@
 package org.app.musannif.controller;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.event.ActionEvent;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.Stage;
+import org.app.musannif.model.FileScanner;
+import org.app.musannif.model.ScannedFile;
+
+import java.io.File;
+import java.nio.file.Path;
+import java.util.List;
 
 public class MainController {
+    private ObservableList<ScannedFile> scannedFiles = FXCollections.observableArrayList();
+    private Path selectedFolder;
     @FXML
     private TextField txtFolderPath;
     @FXML
@@ -28,17 +38,74 @@ public class MainController {
 
     @FXML
     private Button settingsBtn;
+    @FXML
+    private Label lblStatus;
+    @FXML
+    private TableView<ScannedFile> fileTable;
+    @FXML
+    private TableColumn<ScannedFile, String> colName;
+    @FXML
+    private TableColumn<ScannedFile, String> colExt;
+    @FXML
+    private TableColumn<ScannedFile, String> colSize;
+    @FXML
+    private TableColumn<ScannedFile, String> colModified;
 
     @FXML
     private void handleBrowse(ActionEvent event) {
-        System.out.println("Browse button clicked!");
-        // We will add the DirectoryChooser code here later
+        DirectoryChooser chooser = new DirectoryChooser();
+        chooser.setTitle("Select Folder to Organize");
+
+        // Default to user's home directory
+        chooser.setInitialDirectory(new File(System.getProperty("user.home")));
+
+        Stage stage = (Stage) btnBrowse.getScene().getWindow();
+        File chosen = chooser.showDialog(stage);
+        if (chosen != null) {
+            selectedFolder = chosen.toPath();
+            txtFolderPath.setText(chosen.getAbsolutePath());
+            btnScan.setDisable(false);
+            lblStatus.setText("Folder selected. Click Scan Folder to continue.");
+            // Clear any previous results
+            scannedFiles.clear();
+        }
     }
 
     @FXML
     private void handleScan(ActionEvent event) {
-        System.out.println("Scan button clicked!");
-        // We will add the FileScanner code here later
+        if (selectedFolder == null) {
+            lblStatus.setText("Please select a folder first.");
+            return;
+        }
+        // Reset state
+        scannedFiles.clear();
+        btnScan.setDisable(true);
+        lblStatus.setText("Scanning...");
+
+        // Run scan on background thread so the UI stays responsive
+        Task<List<ScannedFile>> scanTask = new Task<>() {
+            @Override
+            protected List<ScannedFile> call() throws Exception {
+                FileScanner scanner = new FileScanner.Builder()
+                        .skipHidden(true)
+                        .maxDepth(-1)       // unlimited depth
+                        .build();
+
+                return scanner.scan(selectedFolder);
+            }
+        };
+
+        scanTask.setOnSucceeded(e -> {
+            scannedFiles.addAll(scanTask.getValue());
+            btnScan.setDisable(false);
+            lblStatus.setText("Scan complete — " + scannedFiles.size() + " files found.");
+        });
+
+        scanTask.setOnFailed(e -> {
+            btnScan.setDisable(false);
+            lblStatus.setText("Scan failed: " + scanTask.getException().getMessage());
+        });
+        new Thread(scanTask).start();
     }
 
     @FXML

@@ -7,6 +7,8 @@
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -16,7 +18,6 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="900.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.app.musannif.controller.MainController">
    <top>
@@ -51,11 +52,19 @@
    <bottom>
       <HBox prefHeight="19.0" prefWidth="900.0" style="-fx-background-color: #777777;" BorderPane.alignment="CENTER">
          <children>
-            <Label alignment="TOP_RIGHT" text="Status: ">
+            <Label alignment="TOP_RIGHT" prefHeight="17.0" prefWidth="101.0" text="Status: ">
                <padding>
                   <Insets left="20.0" />
                </padding>
             </Label>
+            <Label fx:id="lblStatus" alignment="TOP_RIGHT" contentDisplay="CENTER" prefHeight="17.0" prefWidth="298.0" textAlignment="CENTER" textFill="WHITE">
+               <padding>
+                  <Insets left="20.0" />
+               </padding>
+            </Label>
+            <Region prefHeight="19.0" prefWidth="121.0" />
+            <ProgressBar fx:id="scanProgress" prefHeight="17.0" prefWidth="378.0" progress="0.0" stylesheets="@styles.css" />
+            <Region prefHeight="19.0" prefWidth="80.0" />
          </children>
       </HBox>
    </bottom>
@@ -139,7 +148,7 @@
                         </HBox>
                         <HBox prefHeight="100.0" prefWidth="200.0">
                            <children>
-                              <ProgressBar fx:id="scanProgress" progress="0.0" />
+                              <ProgressBar fx:id="scanProgress" progress="0.0" stylesheets="@styles.css" />
                            </children>
                         </HBox>
                         <StackPane prefHeight="600.0" prefWidth="117.0">
@@ -157,14 +166,18 @@
                   </VBox>
                </children>
             </AnchorPane>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="629.0" prefWidth="532.0">
-               <children>
-                  <Label layoutX="178.0" layoutY="293.0" text="No files scannned yet.">
-                     <font>
-                        <Font size="18.0" />
-                     </font>
-                  </Label>
-               </children>
+           <AnchorPane>
+              <TableView fx:id="fileTable" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+                 <columns>
+                    <TableColumn fx:id="colName" prefWidth="220" text="File Name" />
+                    <TableColumn fx:id="colExt" prefWidth="80" text="Extension" />
+                    <TableColumn fx:id="colSize" prefWidth="100" text="Size" />
+                    <TableColumn fx:id="colModified" prefWidth="160" text="Date Modified" />
+                 </columns>
+                 <placeholder>
+                    <Label text="No files scanned yet. Browse a folder and click Scan." />
+                 </placeholder>
+              </TableView>
             </AnchorPane>
         </items>
       </SplitPane>

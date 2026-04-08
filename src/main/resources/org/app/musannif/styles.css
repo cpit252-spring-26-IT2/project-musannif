@@ -51,3 +51,26 @@
     -fx-text-fill: #ffffff;
     -fx-border-width: 0 0 0 4;
 }
+/* Normal progress bar appearance */
+.scan-progress .bar {
+    -fx-background-color: #9ca3af;
+    -fx-background-insets: 0;
+    -fx-background-radius: 4;
+}
+
+.scan-progress .track {
+    -fx-background-color: #d1d5db;
+    -fx-background-radius: 4;
+}
+
+/* When scan is finished, make it green */
+.scan-progress.finished .bar {
+    -fx-background-color: #22c55e;
+    -fx-background-insets: 0;
+    -fx-background-radius: 4;
+}
+
+.scan-progress.finished .track {
+    -fx-background-color: #dcfce7;
+    -fx-background-radius: 4;
+}
