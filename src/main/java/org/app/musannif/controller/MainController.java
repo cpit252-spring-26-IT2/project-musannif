@@ -1,4 +1,5 @@
 package org.app.musannif.controller;
+import org.app.musannif.model.Logger;
 import  org.app.musannif.model.helperMethods;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -73,12 +74,15 @@ public class MainController {
 
         colModified.setCellValueFactory(cellData ->
                 new SimpleStringProperty(helperMethods.formatDateTime(cellData.getValue().lastModified())));
+        Logger.getLogger().info("Application Started");
+
     }
 
     @FXML
     private void handleBrowse(ActionEvent event) {
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Select Folder to Organize");
+        Logger.getLogger().info("Prompt user to select folder");
 
         // Default to user's home directory
         chooser.setInitialDirectory(new File(System.getProperty("user.home")));
@@ -90,6 +94,7 @@ public class MainController {
             txtFolderPath.setText(chosen.getAbsolutePath());
             btnScan.setDisable(false);
             lblStatus.setText("Folder selected. Click Scan Folder to continue.");
+            Logger.getLogger().info("Folder Selected");
             // Clear any previous results
             scannedFiles.clear();
         }
@@ -105,6 +110,8 @@ public class MainController {
         scannedFiles.clear();
         btnScan.setDisable(true);
         lblStatus.setText("Scanning...");
+        Logger.getLogger().info("Folders scanning");
+
 
         // Run scan on background thread so the UI stays responsive
         Task<List<ScannedFile>> scanTask = new Task<>() {
@@ -114,7 +121,7 @@ public class MainController {
                         .skipHidden(true)
                         .maxDepth(-1)       // unlimited depth
                         .build();
-
+                Logger.getLogger().info("FileScanner Object Created");
                 return scanner.scan(selectedFolder);
             }
         };
@@ -123,11 +130,14 @@ public class MainController {
             scannedFiles.addAll(scanTask.getValue());
             btnScan.setDisable(false);
             lblStatus.setText("Scan complete — " + scannedFiles.size() + " files found.");
+            Logger.getLogger().info("Folder scanning Complete");
+
         });
 
         scanTask.setOnFailed(e -> {
             btnScan.setDisable(false);
             lblStatus.setText("Scan failed: " + scanTask.getException().getMessage());
+            Logger.getLogger().info("Folder scanning Failed");
         });
         new Thread(scanTask).start();
     }
