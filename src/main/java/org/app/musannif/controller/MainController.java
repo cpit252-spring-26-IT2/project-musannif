@@ -1,11 +1,13 @@
 package org.app.musannif.controller;
-
+import  org.app.musannif.model.helperMethods;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.event.ActionEvent;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import org.app.musannif.model.FileScanner;
@@ -24,6 +26,10 @@ public class MainController {
     private Button btnBrowse;
     @FXML
     private Button btnScan;
+
+    @FXML
+    private Button btnApply;
+
     @FXML
     private ProgressBar scanProgress;
 
@@ -50,6 +56,24 @@ public class MainController {
     private TableColumn<ScannedFile, String> colSize;
     @FXML
     private TableColumn<ScannedFile, String> colModified;
+
+    @FXML
+    private void initialize() {
+        fileTable.setItems(scannedFiles);
+        btnScan.setDisable(true);
+        btnApply.setDisable(true);
+        lblStatus.setText("Select a folder to begin.");
+        colName.setCellValueFactory(cellData->
+                new SimpleStringProperty(cellData.getValue().path().getFileName().toString()));
+        colExt.setCellValueFactory(cellData->
+                new SimpleStringProperty(cellData.getValue().extension()));
+
+        colSize.setCellValueFactory(cellData ->
+                new SimpleStringProperty(helperMethods.formatFileSize(cellData.getValue().sizeBytes())));
+
+        colModified.setCellValueFactory(cellData ->
+                new SimpleStringProperty(helperMethods.formatDateTime(cellData.getValue().lastModified())));
+    }
 
     @FXML
     private void handleBrowse(ActionEvent event) {
