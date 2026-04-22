@@ -38,6 +38,29 @@
     -fx-cursor: hand;
     -fx-border-width: 0 0 0 4;
 }
+.nav-buttontest {
+    -fx-background-color: transparent;
+    -fx-text-fill: #a84b4b;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-alignment: BASELINE_LEFT;
+    -fx-padding: 15 15 15 20;
+    -fx-cursor: hand;
+    -fx-border-width: 0 0 0 4;
+}
+
+/* Hover State */
+.nav-buttontest:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+    -fx-text-fill: #ffffff;
+}
+
+/* Active/Selected State */
+.nav-buttontest-active {
+    -fx-background-color: rgba(29, 158, 117, 0.2);
+    -fx-text-fill: #ffffff;
+    -fx-border-width: 0 0 0 4;
+}
 
 /* Hover State */
 .nav-button:hover {

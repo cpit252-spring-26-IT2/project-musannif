@@ -1,6 +1,8 @@
 package org.app.musannif.controller;
-import org.app.musannif.model.Logger;
-import  org.app.musannif.model.helperMethods;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import org.app.musannif.model.*;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -8,13 +10,12 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.event.ActionEvent;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
-import org.app.musannif.model.FileScanner;
-import org.app.musannif.model.ScannedFile;
 
+import java.awt.*;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -30,6 +31,9 @@ public class MainController {
 
     @FXML
     private Button btnApply;
+
+    @FXML
+    private Button genTestBtn;
 
     @FXML
     private ProgressBar scanProgress;
@@ -170,6 +174,15 @@ public class MainController {
     private void handleSettings(ActionEvent event) {
         System.out.println("Settings button clicked!");
         // We will add the Settings code here later
+    }
+
+    @FXML
+    private void handleGenerateTestFiles(ActionEvent event) throws IOException, InterruptedException {
+        Logger.getLogger().info("Generate Test Files Button Clicked");
+        TestFilesGenerator.generate();
+        lblStatus.setText("Generating Test Files");
+        lblStatus.setText("Files Generated!");
+        Desktop.getDesktop().open(new File(System.getProperty("user.home")+"/.musannif-test"));
     }
 }
 

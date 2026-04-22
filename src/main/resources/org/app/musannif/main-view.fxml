@@ -19,7 +19,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="900.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.app.musannif.controller.MainController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="900.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.app.musannif.controller.MainController">
    <top>
       <HBox prefHeight="47.0" prefWidth="900.0" spacing="15.0" style="-fx-background-color: #1D9E75;" BorderPane.alignment="CENTER">
          <BorderPane.margin>
@@ -99,6 +99,18 @@
                </styleClass>
             </Button>
             <Region prefHeight="454.0" prefWidth="150.0" />
+            <Button fx:id="genTestBtn" maxWidth="-Infinity" mnemonicParsing="false" onAction="#handleGenerateTestFiles" prefHeight="30.0" prefWidth="153.0" stylesheets="@styles.css" text="Generate Test Files" textAlignment="CENTER" textFill="#ff8585">
+               <padding>
+                  <Insets bottom="15.0" top="15.0" />
+               </padding>
+               <styleClass>
+                  <String fx:value="nav-buttontest" />
+                  <String fx:value="nav-buttontest" />
+               </styleClass>
+               <font>
+                  <Font name="Arial Black" size="1.0" />
+               </font>
+            </Button>
             <Button fx:id="settingsBtn" maxWidth="-Infinity" mnemonicParsing="false" onAction="#handleSettings" prefHeight="30.0" prefWidth="153.0" stylesheets="@styles.css" text="Settings">
                <padding>
                   <Insets bottom="15.0" top="15.0" />

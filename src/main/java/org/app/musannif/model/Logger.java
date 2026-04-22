@@ -1,5 +1,6 @@
 package org.app.musannif.model;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -9,7 +10,8 @@ import java.time.format.DateTimeFormatter;
 public class Logger {
     DateTimeFormatter myFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy-HH-mm-ss");
     String currentDateTimeString = LocalDateTime.now().format(myFormatter);
-    private final String logFile = "musannif-app-"+currentDateTimeString + ".log";
+    private static final String LOG_DIR = "logs";
+    private final String logFile = LOG_DIR + "/musannif-app-" + currentDateTimeString + ".log";
     private PrintWriter writer;
 
     private static Logger logger;
@@ -17,6 +19,7 @@ public class Logger {
 
     private Logger(){
         try {
+            new File(LOG_DIR).mkdirs();
             FileWriter fw = new FileWriter(logFile);
             writer = new PrintWriter(fw, true);
         }
