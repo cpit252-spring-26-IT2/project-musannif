@@ -33,7 +33,7 @@ public class FileOrganizer {
         int skippedFiles = 0;
 
         for (Map.Entry<String, List<ScannedFile>> entry : categorizedFiles.entrySet()) {
-            String categoryName = entry.getKey();
+            String categoryName = sanitizeFolderName(entry.getKey());
             List<ScannedFile> files = entry.getValue();
 
             if (files == null || files.isEmpty()) {
@@ -50,7 +50,7 @@ public class FileOrganizer {
                 }
 
                 Path source = scannedFile.path();
-                Path destination = categoryDirectory;
+                Path destination = resolveAvailableDestination(categoryDirectory, source.getFileName());
 
                 Files.move(source, destination);
                 movedFiles++;
@@ -60,6 +60,47 @@ public class FileOrganizer {
         return new OrganizationResult(movedFiles, skippedFiles);
     }
 
+    /**
+     * Creates a safe folder name from a category name.
+     * Invalid Windows filename characters are replaced with underscores.
+     */
+    private String sanitizeFolderName(String folderName) {
+        if (folderName == null || folderName.isBlank()) {
+            return FileCategorizer.FALLBACK_CATEGORY;
+        }
+
+        return folderName.replaceAll("[\\\\/:*?\"<>|]", "_").trim();
+    }
+
+    /**
+     * Resolves a destination path that does not overwrite an existing file.
+     *
+     * <p>Example:
+     * <ul>
+     *   <li>photo.jpg</li>
+     *   <li>photo (1).jpg</li>
+     *   <li>photo (2).jpg</li>
+     * </ul>
+     */
+    private Path resolveAvailableDestination(Path directory, Path fileName) {
+        Path destination = directory.resolve(fileName);
+
+        if (!Files.exists(destination)) {
+            return destination;
+        }
+
+        String originalFileName = fileName.toString();
+        String baseName = getBaseName(originalFileName);
+        String extension = getExtensionWithDot(originalFileName);
+
+        int counter = 1;
+        while (Files.exists(destination)) {
+            destination = directory.resolve(baseName + " (" + counter + ")" + extension);
+            counter++;
+        }
+
+        return destination;
+    }
 
     private String getBaseName(String fileName) {
         int dotIndex = fileName.lastIndexOf('.');
@@ -84,3 +125,4 @@ public class FileOrganizer {
     public record OrganizationResult(int movedFiles, int skippedFiles) {
     }
 }
+
