@@ -125,4 +125,3 @@ public class FileOrganizer {
     public record OrganizationResult(int movedFiles, int skippedFiles) {
     }
 }
-
