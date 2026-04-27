@@ -1,7 +1,10 @@
 package org.app.musannif.controller;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import org.app.musannif.model.*;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -16,6 +19,7 @@ import javafx.stage.Stage;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -31,6 +35,9 @@ public class MainController {
 
     @FXML
     private Button btnApply;
+
+    @FXML
+    private Button btnInfo;
 
     @FXML
     private Button genTestBtn;
@@ -63,7 +70,12 @@ public class MainController {
     private TableColumn<ScannedFile, String> colModified;
 
     @FXML
+    private CheckBox chkByExtension;
+
+    @FXML
     private void initialize() {
+        previewBtn.setDisable(true);
+        historyBtn.setDisable(true);
         fileTable.setItems(scannedFiles);
         btnScan.setDisable(true);
         btnApply.setDisable(true);
@@ -89,7 +101,7 @@ public class MainController {
         Logger.getLogger().info("Prompt user to select folder");
 
         // Default to user's home directory
-        chooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        chooser.setInitialDirectory(new File(System.getProperty("user.home")+"/.musannif-test"));
 
         Stage stage = (Stage) btnBrowse.getScene().getWindow();
         File chosen = chooser.showDialog(stage);
@@ -123,7 +135,7 @@ public class MainController {
             protected List<ScannedFile> call() throws Exception {
                 FileScanner scanner = new FileScanner.Builder()
                         .skipHidden(true)
-                        .maxDepth(-1)       // unlimited depth
+                        .maxDepth(1)       // -1 for unlimited depth
                         .build();
                 Logger.getLogger().info("FileScanner Object Created");
                 return scanner.scan(selectedFolder);
@@ -133,6 +145,7 @@ public class MainController {
         scanTask.setOnSucceeded(e -> {
             scannedFiles.addAll(scanTask.getValue());
             btnScan.setDisable(false);
+            btnApply.setDisable(false);
             lblStatus.setText("Scan complete — " + scannedFiles.size() + " files found.");
             Logger.getLogger().info("Folder scanning Complete");
 
@@ -147,9 +160,55 @@ public class MainController {
     }
 
     @FXML
-    private void handleApply(ActionEvent event) {
-        System.out.println("Apply button clicked!");
-        // We will add the Apply code here later
+    private void handleApply(ActionEvent event) throws IOException {
+        if (selectedFolder == null || scannedFiles.isEmpty()){
+            lblStatus.setText("Nothing to Organize, Scan a folder first.");
+            return;
+        }
+
+        btnApply.setDisable(true);
+        btnScan.setDisable(true);
+
+        lblStatus.setText("Organizing");
+        Logger.getLogger().info("Organizing Files in: "+selectedFolder);
+
+        Task<FileOrganizer.OrganizationResult> organizeTask =
+                new Task<>() {
+                    @Override
+                    protected FileOrganizer.OrganizationResult call() throws Exception {
+                        FileOrganizerFacade facade = new FileOrganizerFacade.Builder()
+                                .skipHidden(true)
+                                .maxDepth(1)
+                                .withDefaultCategories()
+                                .build();
+                        return facade.organize(selectedFolder, selectedFolder);
+                    }
+                };
+
+
+                   organizeTask.setOnSucceeded(e -> {
+                       FileOrganizer.OrganizationResult result = organizeTask.getValue();
+                       if (chkByExtension.isSelected())
+                           helperMethods.addFolderIcons(selectedFolder);
+                       scannedFiles.clear();
+                       btnScan.setDisable(false);
+                       btnApply.setDisable(false);
+                       lblStatus.setText("Done —" + result.movedFiles() + " files, " + result.skippedFiles() + " skipped.");
+                       Logger.getLogger().info("Organization Complete: "+ result.movedFiles() + " files moved, " + result.skippedFiles() + " skipped.");
+                   });
+
+                   organizeTask.setOnFailed(e -> {
+                       btnScan.setDisable(false);
+                       btnApply.setDisable(false);
+                       lblStatus.setText("Organization Failed: " + organizeTask.getException().getMessage());
+                       Logger.getLogger().info("Organization Failed: "+ organizeTask.getException().getMessage());
+                   });
+
+                   Desktop.getDesktop().open((selectedFolder).toFile());
+                   new Thread(organizeTask).start();
+
+
+
     }
 
     @FXML
@@ -175,6 +234,51 @@ public class MainController {
         System.out.println("Settings button clicked!");
         // We will add the Settings code here later
     }
+
+    @FXML
+    private void handleInfo(ActionEvent event) {
+
+        Hyperlink authorLink1 = new Hyperlink("@nullMuath");
+        authorLink1.setOnAction(e -> openURL("https://github.com/nullMuath"));
+
+        Hyperlink authorLink2 = new Hyperlink("@MeCaveman");
+        authorLink2.setOnAction(e -> openURL("https://github.com/MeCaveman"));
+
+        Hyperlink repoLink = new Hyperlink("github.com/cpit252-spring-26-IT2/project-musannif");
+        repoLink.setOnAction(e -> openURL("https://github.com/cpit252-spring-26-IT2/project-musannif"));
+
+        HBox authors = new HBox(2, authorLink1, new Label("&"), authorLink2);
+        authors.setAlignment(Pos.CENTER);
+        Label devLabel = new Label("Developed by");
+        devLabel.setMaxWidth(Double.MAX_VALUE);
+        devLabel.setAlignment(Pos.CENTER);
+
+        VBox content = new VBox(8,
+                new Label("a javafx desktop app that organizes and sorts your files."),
+                new Label("Version 0.2"),
+                devLabel,
+                authors,
+                new Separator(),
+                new Label("Project Repository:"),
+                repoLink
+        );
+
+        Alert alert = new Alert(Alert.AlertType.NONE);
+        alert.setTitle("About Musannif");
+        alert.setHeaderText("Musannif - مصنف");
+        alert.getDialogPane().setContent(content);
+        alert.getButtonTypes().add(ButtonType.OK);
+        alert.showAndWait();
+    }
+
+    private void openURL(String url) {
+        try {
+            Desktop.getDesktop().browse(new URI(url));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     @FXML
     private void handleGenerateTestFiles(ActionEvent event) throws IOException, InterruptedException {

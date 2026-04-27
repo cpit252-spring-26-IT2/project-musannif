@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.DosFileAttributeView;
 import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -63,8 +64,14 @@ public class TestFilesGenerator {
             try (var entries = Files.list(path)) {
                 for (Path entry : entries.toList()) {
                     deleteRecursively(entry);
+                }
             }
-            }
+        }
+        DosFileAttributeView attrs = Files.getFileAttributeView(path, DosFileAttributeView.class);
+        if (attrs != null) {
+            attrs.setReadOnly(false);
+            attrs.setHidden(false);
+            attrs.setSystem(false);
         }
         Files.delete(path);
     }
